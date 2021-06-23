@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mobx/mobx.dart';
+import 'package:photogram/app/constants.dart';
+import 'package:photogram/app/modules/register/register_store.dart';
 
 class RegisterPage extends StatefulWidget {
   final String title;
@@ -6,12 +11,14 @@ class RegisterPage extends StatefulWidget {
   @override
   RegisterPageState createState() => RegisterPageState();
 }
-class RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends ModularState<RegisterPage, RegisterStore> {
 
   late PageController _pageController;
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
+
+  late final ReactionDisposer _disposer;
 
   @override
   void initState() {
@@ -20,7 +27,53 @@ class RegisterPageState extends State<RegisterPage> {
     _nameController = TextEditingController();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+
+    _disposer = when(
+      (_) => store.user != null,
+      () => Modular.to.pushReplacementNamed('/home')//Constants.Routes.HOME)
+    );
   }
+
+  @override
+  void dispose() {
+    _disposer();
+    super.dispose();
+  }
+
+  late final Widget _form = PageView(
+    scrollDirection: Axis.vertical,
+    controller: _pageController,
+    physics: NeverScrollableScrollPhysics(),
+    children: [
+      _FormField(
+        controller: _nameController,
+        label: "Qual é o seu nome?",
+        showsBackButton: false,
+        onNext: () { _pageController.nextPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
+        onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
+      ),
+      _FormField(
+        controller: _emailController,
+        label: "Qual é o seu melhor email?",
+        showsBackButton: true,
+        onNext: () { _pageController.nextPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
+        onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
+      ),
+      _FormField(
+        controller: _passwordController,
+        label: "Crie a sua senha",
+        showsBackButton: true,
+        onNext: () {
+          store.registerUser(
+              name: _nameController.text,
+              email: _emailController.text,
+              password: _passwordController.text
+          );
+        },
+        onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
+      )
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -28,33 +81,21 @@ class RegisterPageState extends State<RegisterPage> {
       // appBar: AppBar(
       //   title: Text(widget.title),
       // ),
-      body: PageView(
-        scrollDirection: Axis.vertical,
-        controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
-        children: [
-          _FormField(
-            controller: _nameController,
-            label: "Qual é o seu nome?",
-            showsBackButton: false,
-            onNext: () { _pageController.nextPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
-            onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
-          ),
-          _FormField(
-            controller: _emailController,
-            label: "Qual é o seu melhor email?",
-            showsBackButton: true,
-            onNext: () { _pageController.nextPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
-            onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
-          ),
-          _FormField(
-            controller: _passwordController,
-            label: "Crie a sua senha",
-            showsBackButton: true,
-            onNext: () { _pageController.nextPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
-            onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
-          )
-        ],
+      body: Observer(
+        builder: (_) {
+          if(store.loading) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Text('Aguarde... salvando seu cadastro...')
+              ],
+            );
+          }
+          return _form;
+        }
       ),
     );
   }

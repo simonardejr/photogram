@@ -1,5 +1,6 @@
 abstract class Constants {
   static const ONBOARDING_IS_DONE = 'OnboardingIsDone';
+  static const REGISTER_DONE = 'RegisterIsDone';
 
   static final Routes = _Routes();
 }
