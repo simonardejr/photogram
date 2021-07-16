@@ -102,7 +102,9 @@ class _userSubHeader extends StatelessWidget {
                       return Text((store.user?.displayName ?? 'Sem nome'), style: TextStyle(fontWeight: FontWeight.bold));
                     }
                 ),
-                Text('blab blvlkaslaskdh ladlkah dlkjahd lkashdlk ahdlka shdlkas hlkahd'),
+                Observer(builder: (_) {
+                  return Text(store.bio ?? '');
+                }),
                 ElevatedButton(
                     onPressed: () {
                       Modular.to.pushNamed('.' + Constants.Routes.EDIT_PROFILE);
