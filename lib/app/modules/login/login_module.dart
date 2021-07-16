@@ -14,7 +14,9 @@ class LoginModule extends Module {
   @override
   final List<ModularRoute> routes = [
     ChildRoute(Modular.initialRoute, child: (context, args) => LoginPage()),
-    ChildRoute(Constants.Routes.FORGOT_PASSWORD,
-        child: (context, args) => ForgotPasswordPage())
+    ChildRoute(
+        Constants.Routes.FORGOT_PASSWORD,
+        child: (context, args) => ForgotPasswordPage()
+    )
   ];
 }

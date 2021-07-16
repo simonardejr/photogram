@@ -71,6 +71,7 @@ class RegisterPageState extends ModularState<RegisterPage, RegisterStore> {
           );
         },
         onBack: () { _pageController.previousPage(duration: Duration(milliseconds: 400), curve: Curves.easeInOut); },
+        obscureText: true,
       )
     ],
   );
@@ -78,24 +79,28 @@ class RegisterPageState extends ModularState<RegisterPage, RegisterStore> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(widget.title),
-      // ),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
       body: Observer(
         builder: (_) {
-          if(store.loading) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                Text('Aguarde... salvando seu cadastro...')
-              ],
+          if (store.loading) {
+            return Container(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Text('Aguarde... salvando seu cadastro...')
+                  ],
+                ),
+              ),
             );
           }
           return _form;
-        }
+        },
       ),
     );
   }
@@ -107,8 +112,9 @@ class _FormField extends StatelessWidget {
   final String label;
   final VoidCallback onNext;
   final VoidCallback onBack;
+  final bool obscureText;
 
-  _FormField({required this.controller, this.showsBackButton=true, required this.label, required this.onNext, required this.onBack});
+  _FormField({required this.controller, this.showsBackButton=true, required this.label, required this.onNext, required this.onBack, this.obscureText=false});
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +157,7 @@ class _FormField extends StatelessWidget {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none
                   ),
+                  obscureText: obscureText,
                 )
               ],
             ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -22,6 +23,7 @@ class AppModule extends Module {
     Bind.singleton((i) => _sharedPreferences),
     Bind.instance(_firebaseApp),
     Bind.factory((i) => FirebaseAuth.instance),
+    Bind.factory((i) => FirebaseFirestore.instance)
   ];
 
   @override

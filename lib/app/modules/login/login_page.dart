@@ -51,6 +51,7 @@ class LoginPageState extends ModularState<LoginPage, LoginStore> {
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 24),
+        color: Colors.white,
         child: ListView(
           children: [
             Container(

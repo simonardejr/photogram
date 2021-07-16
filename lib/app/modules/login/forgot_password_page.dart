@@ -29,6 +29,7 @@ class ForgotPasswordPageState extends ModularState<ForgotPasswordPage, LoginStor
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        color: Colors.white,
         child: ListView(
           children: <Widget>[
             Text('Não tem problema!', style: Theme.of(context).textTheme.headline1?.copyWith(fontSize: 32)),

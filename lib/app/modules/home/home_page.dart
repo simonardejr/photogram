@@ -3,52 +3,66 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:photogram/app/constants.dart';
 import 'package:mobx/mobx.dart';
-import 'home_store.dart';
+
 
 class HomePage extends StatefulWidget {
-  final String title;
-  const HomePage({Key? key, this.title = "Home"}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ModularState<HomePage, HomeStore> {
+class _HomePageState extends State<HomePage> {
 
-  late final ReactionDisposer _disposer;
-
+  int _currentTab = 0;
+  
   @override
   void initState() {
     super.initState();
-
-    _disposer = when(
-      (_) => store.user == null,
-      () => Modular.to.pushReplacementNamed(Constants.Routes.LOGIN)
-    );
-
+    _onTabChange(_currentTab);
   }
 
-  @override
-  void dispose() {
-    _disposer();
-    super.dispose();
+  void _onTabChange(int index) {
+    setState(() {
+      _currentTab = index;
+    });
+    switch(index) {
+      case 0:
+        Modular.to.navigate(Constants.Routes.HOME + Constants.Routes.FEED);
+        break;
+      case 1:
+        Modular.to.navigate(Constants.Routes.HOME + Constants.Routes.SEARCH);
+        break;
+      case 2:
+        Modular.to.navigate(Constants.Routes.HOME + Constants.Routes.PROFILE);
+        break;
+      default: break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Counter'),
-      ),
-      body: Container(
-        child: Center(
-          child: ElevatedButton(
-            child: Text('LOGOFF'),
-            onPressed: () {
-              store.logoff();
-            },
+      body: RouterOutlet(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentTab,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        onTap: _onTabChange,
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Home',
           ),
-        ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Buscar',
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle_rounded),
+              label: 'Perfil'
+          ),
+        ],
       ),
     );
   }
