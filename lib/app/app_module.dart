@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:photogram/app/constants.dart';
+import 'package:photogram/app/modules/messages/messages_module.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'modules/home/home_module.dart';
@@ -35,6 +36,7 @@ class AppModule extends Module {
     ModuleRoute(Constants.Routes.REGISTER, module: RegisterModule(), transition: TransitionType.fadeIn),
     ModuleRoute(Constants.Routes.HOME, module: HomeModule(), guards: [_FirebaseAuthGuard()]),
     ModuleRoute(Constants.Routes.LOGIN, module: LoginModule(), transition: TransitionType.fadeIn),
+    ModuleRoute(Constants.Routes.MESSAGES_USER_LIST, module: MessagesModule(), transition: TransitionType.rightToLeft),
   ];
 
   Module _initialModule() {

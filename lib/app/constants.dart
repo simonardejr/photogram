@@ -15,4 +15,6 @@ class _Routes {
   final SEARCH = '/search';
   final PROFILE = '/profile';
   final EDIT_PROFILE = '/edit';
+  final MESSAGES_USER_LIST = '/messages';
+  final MESSAGES_FROM_USER = '/messages/';
 }
