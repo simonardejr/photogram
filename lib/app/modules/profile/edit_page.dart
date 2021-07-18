@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobx/mobx.dart';
 import 'package:photogram/app/modules/profile/user_store.dart';
 
@@ -19,6 +20,8 @@ class EditPageState extends ModularState<EditPage, UserStore> {
   late final FocusNode _nameFocusNode;
   late final FocusNode _bioFocusNode;
 
+  late final ImagePicker _picker;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +29,7 @@ class EditPageState extends ModularState<EditPage, UserStore> {
     _nameFocusNode = FocusNode();
     _bioController = TextEditingController(text: store.bio);
     _bioFocusNode = FocusNode();
+    _picker = ImagePicker();
     
     reaction((_) => store.user, (_) {
       _nameController.text = store.user?.displayName ?? '';
@@ -73,13 +77,84 @@ class EditPageState extends ModularState<EditPage, UserStore> {
           SizedBox(height: 24),
           CircleAvatar(
             radius: 40,
-            child: CircleAvatar(
-              radius: 38,
-              backgroundImage: AssetImage('assets/img6.png'),
+            child: Observer(
+              builder: (_) {
+                if(store.user!.photoURL != null && store.user!.photoURL!.isNotEmpty) {
+                  return CircleAvatar(
+                    radius: 38,
+                    backgroundImage: NetworkImage(store.user!.photoURL!),
+                  );
+                }
+                return CircleAvatar(
+                  radius: 38,
+                  backgroundImage: AssetImage('assets/img6.png'),
+                );
+              },
             ),
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (ctx) {
+                      return Container(
+                        padding: EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.camera_alt_outlined),
+                                  SizedBox(width: 16),
+                                  Text('Usar Câmera')
+                                ],
+                              ),
+                              onTap: () async {
+                                final picturePath = await _picker.pickImage(
+                                    source: ImageSource.camera,
+                                    imageQuality: 50,
+                                    maxWidth: 1920,
+                                    maxHeight: 1280
+                                );
+                                if(picturePath != null) {
+                                  store.updateProfilePicture(picturePath.path);
+                                }
+
+                                Navigator.of(ctx).pop();
+                              },
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            InkWell(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.photo_library_outlined),
+                                  SizedBox(width: 16),
+                                  Text('Escolher da galeria')
+                                ],
+                              ),
+                              onTap: () async {
+                                final picturePath = await _picker.pickImage(
+                                    source: ImageSource.gallery,
+                                    imageQuality: 50,
+                                    maxWidth: 1920,
+                                    maxHeight: 1280
+                                );
+                                if(picturePath != null) {
+                                  store.updateProfilePicture(picturePath.path);
+                                }
+
+                                Navigator.of(ctx).pop();
+                              },
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                );
+              },
               child: Text('Alterar foto')
           ),
           _editField(label: 'Nome:', controller: _nameController, focusNode: _nameFocusNode),

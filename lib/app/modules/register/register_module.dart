@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:photogram/app/modules/register/register_store.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -9,7 +10,8 @@ class RegisterModule extends Module {
   final List<Bind> binds = [
     Bind.lazySingleton((i) => RegisterStore(
         firebaseAuth: i.get<FirebaseAuth>(),
-        sharedPreferences: i.get<SharedPreferences>()
+        firebaseFirestore: i.get<FirebaseFirestore>(),
+        sharedPreferences: i.get<SharedPreferences>(),
     )),
   ];
 

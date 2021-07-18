@@ -39,6 +39,21 @@ mixin _$RegisterStore on _RegisterStoreBase, Store {
     });
   }
 
+  final _$errorAtom = Atom(name: '_RegisterStoreBase.error');
+
+  @override
+  FirebaseException? get error {
+    _$errorAtom.reportRead();
+    return super.error;
+  }
+
+  @override
+  set error(FirebaseException? value) {
+    _$errorAtom.reportWrite(value, super.error, () {
+      super.error = value;
+    });
+  }
+
   final _$registerUserAsyncAction =
       AsyncAction('_RegisterStoreBase.registerUser');
 
@@ -47,6 +62,16 @@ mixin _$RegisterStore on _RegisterStoreBase, Store {
       {required String name, required String email, required String password}) {
     return _$registerUserAsyncAction.run(
         () => super.registerUser(name: name, email: email, password: password));
+  }
+
+  final _$updateProfileAsyncAction =
+      AsyncAction('_RegisterStoreBase.updateProfile');
+
+  @override
+  Future<void> updateProfile(
+      {required String displayName, required String bio}) {
+    return _$updateProfileAsyncAction
+        .run(() => super.updateProfile(displayName: displayName, bio: bio));
   }
 
   final _$_RegisterStoreBaseActionController =
@@ -67,7 +92,8 @@ mixin _$RegisterStore on _RegisterStoreBase, Store {
   String toString() {
     return '''
 user: ${user},
-loading: ${loading}
+loading: ${loading},
+error: ${error}
     ''';
   }
 }
