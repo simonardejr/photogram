@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:photogram/app/constants.dart';
 import 'package:photogram/app/modules/feed/feed_store.dart';
 
 class FeedPage extends StatefulWidget {
@@ -12,6 +13,21 @@ class FeedPage extends StatefulWidget {
   FeedPageState createState() => FeedPageState();
 }
 class FeedPageState extends ModularState<FeedPage, FeedStore> {
+  
+  ImageProvider _profilePic(data) {
+    late ImageProvider userProfile;
+    try {
+      if(data.get('profilePic') != null) {
+        userProfile = NetworkImage(data['profilePic']);
+      }
+    } catch (e, s) {
+      userProfile = AssetImage('assets/img6.png');
+      print(s);
+      print('O documento não possui uma profilePic, usando o default. $e');
+    }
+    return userProfile;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +43,9 @@ class FeedPageState extends ModularState<FeedPage, FeedStore> {
               icon: Icon(Icons.favorite_border_outlined)
           ),
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Modular.to.pushNamed(Constants.Routes.MESSAGES_USER_LIST);
+              },
               icon: Icon(Icons.chat_bubble_outline)
           )
         ],
@@ -62,7 +80,7 @@ class FeedPageState extends ModularState<FeedPage, FeedStore> {
                           child: Row(
                             children: [
                               CircleAvatar(
-                                backgroundImage: NetworkImage(user['profilePic']),
+                                backgroundImage: _profilePic(user),
                               ),
                               SizedBox(width: 8),
                               Text(user['displayName'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),)
